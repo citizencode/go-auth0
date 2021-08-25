@@ -10,7 +10,7 @@ import (
 
 // MapClaims is a claims type that uses the map[string]interface{} for JSON decoding.
 // This is the default claims type if you don't supply one
-type MapClaims map[string]interface{}
+type MapClaims = jwtLib.MapClaims
 
 func NewRS256(uri string) (*RS256, error) {
 	jwks, err := fetchJwks(uri)
