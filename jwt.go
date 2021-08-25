@@ -8,7 +8,11 @@ import (
 	jwtLib "github.com/golang-jwt/jwt/v4"
 )
 
-func NewValidator(uri string) (*RS256, error) {
+// MapClaims is a claims type that uses the map[string]interface{} for JSON decoding.
+// This is the default claims type if you don't supply one
+type MapClaims map[string]interface{}
+
+func NewRS256(uri string) (*RS256, error) {
 	jwks, err := fetchJwks(uri)
 	if err != nil {
 		return nil, err
@@ -18,9 +22,6 @@ func NewValidator(uri string) (*RS256, error) {
 
 type RS256 struct {
 	jwks *jwks
-}
-
-type JWT struct {
 }
 
 func (r RS256) keyFunc(token *jwtLib.Token) (interface{}, error) {
@@ -70,14 +71,4 @@ func decodeCertificate(encodedCert string) (*x509.Certificate, error) {
 
 func (r RS256) JWT(token string) (*jwtLib.Token, error) {
 	return jwtLib.Parse(token, jwtLib.Keyfunc(r.keyFunc))
-}
-
-func NewRS256(jwksUri string) (*RS256, error) {
-	j, err := fetchJwks(jwksUri)
-	if err != nil {
-		return nil, err
-	}
-	return &RS256{
-		jwks: j,
-	}, nil
 }
