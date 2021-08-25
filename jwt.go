@@ -8,6 +8,14 @@ import (
 	jwtLib "github.com/golang-jwt/jwt/v4"
 )
 
+func NewValidator(uri string) (*RS256, error) {
+	jwks, err := fetchJwks(uri)
+	if err != nil {
+		return nil, err
+	}
+	return RS256{jwks}, nil
+}
+
 type RS256 struct {
 	jwks *jwks
 }

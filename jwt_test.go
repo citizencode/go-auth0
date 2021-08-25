@@ -67,9 +67,10 @@ func TestJwt(t *testing.T) {
 			expectedErr: "Token is expired",
 		},
 		{
-			desc: "valid jwt",
-			jwks: validJwks,
-			jwt:  validJwt,
+			desc:        "valid jwt",
+			jwt:         validJwt,
+			jwks:        validJwks,
+			expectedErr: "",
 		},
 		{
 			desc:        "incorrect alg",
