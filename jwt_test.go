@@ -5,6 +5,22 @@ import (
 	"testing"
 )
 
+// expires 2031
+const validJwks = `{
+	"keys": [
+		{
+		"alg": "RS256",
+		"kty": "RSA",
+		"use": "sig",
+		"kid": "1",
+		"x5c": ["MIIE2DCCAsACCQCqonZfu3tmvzANBgkqhkiG9w0BAQsFADAuMQswCQYDVQQGEwJaQTEfMB0GA1UEAwwWYXV0aDAuY2l0aXplbmNvZGUudGVzdDAeFw0yMTA4MjUxMDMzNThaFw0zMTA4MjMxMDMzNThaMC4xCzAJBgNVBAYTAlpBMR8wHQYDVQQDDBZhdXRoMC5jaXRpemVuY29kZS50ZXN0MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtwWIFXNW2EYupuzwqh7tR3z6GbTheGOnxTDyb9c6AP+4qHIFSx3YcazX3V2eBrIi2DjVN5uSSJ5jgVu6fTcJez5e7wuRZw90WF24Vf0iigHblEvDZk4DIXISCicMZ1Z0Ji2BlMmgDXgskBfRPYyFNWTLYxze9FtZqosPJcr71T9R2pRH8beUQ3v/3YvavgEOqrNFYUhdpjemGnahyjS3jKwGZmOAG0dWJamRwy+dLneXwAE/wZV/pCXalG/dbDLDR4GBswlNXbID8lynk+DxbBmRd15KxSaE8CWUCehKJCj84GECszFphBDxtM5+nfRtM2yqMdZhmBbjGVaOdrjFZ2wOcObiD912xP+a9tHukHKZYhHuGQ8UoXzFGwxKcDL3zvlfric8bBwRgjzgXvksFe76TQCT1dZHwhfA/4NNgcooov6A3OsrTHfZVDebUyF4yjWrPHB6Pl/nxl13Tc5tsen9ol8OKj0xkPIbbFiPJJudZiePRyTZswqJmfKEUiiTm7uIu5/RbsbSOCwEzV/FhQnNUtEtTiq9Ljx8g6dMOuv+90YvQpws5S02Bs/Np9lMV3c8oKufwGQHlCPd9oemGBti114y2FhhmxGPGDEkOaWHJ48wC35NXAdnAzNBzKscE0jtEp/Mx9XfC9XDsZ17fJzmnkVulB+RuLNqqFVyFwUCAwEAATANBgkqhkiG9w0BAQsFAAOCAgEAFzpR+znsrWVs4Ts/IZ9vPHWozKzrsIbJN4nSzN59iBcOxMoFFuNoanVNj2/f7awFGJavt4Png4ngnMvW4Jmz5sMlBwhMpUGxoVTf0zXlUzoKO9G7bvStj28gZkK7WB3deAqEayar9H5GLUH4zq2NJNEImn0Dmb/6UK5XwymnxBQeUlFPnqbdDNwS+P5FNnnX2jF4BFtA3dQP5T/s0hS+w8v4VN6rsHQWhLJh4MzdaUPqa6JDjrk+OH4tDt+8ddW1krVH/JWA5mHRMXKt1B1PoeI8bZbuEX64q4nIoVR+15Tg7QF5ZMhC16go162sTkAOQtvNgdUGhkRGAAT6zgWBlg1oWu1rcoXfhXoOw4jd3XV30FbqcpZPHEkoIcloIh14P5VEm2RvyQ0pFWR0+RbQRY6/pdklQb7q5I9URQunxB5ZsUlaUae2cfxQFgTlAn7IX1fZ9C7vmGjbGNRJAgKmjm5cztkLc5v8e63R/Ea9cPguh0uuu0IBBUzv2YKHr79xKEI+MU10R7WSDLeV9GOwH2XRM+hUdyiDY1TrcHkMB0+A0leAO9Gqg+24nWKLz6xHu+/tkufV3+BzmBih0BxKmOl/oLgcSPCiGG3LnkFtKVN4MfqxMlDrddjNNCw9/uOuuYuI0PpWgYkd7R+WoNpBruXGRg+6m0L6CrpcIVfBQ+s="]
+		}
+	]
+}`
+
+const validJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE2Mjk4OTAyOTUsImV4cCI6MjAwMDAwMDAwMH0.fRWYZIPmkWkTkfypx7yyVSASiXYCuXcRJoCEho881D2VT7wSmI5lp4EylE1A-AN9c0TKa5QJId8Iv1E3SUqDB7ri9a4ejGmgBv8vKOHL3Ou329BCIHrojKsgvitPhI-4CHM7SSN-ZKMQqJ3u-bWAEURlC938if4-Sbi4BCu_027dG8C077odErT42XbCOuH1gWjll7h2_Vng8Z26i4W31M3NH2hluxi5X1JGHJe4FB0J-C5xx_usWES9n9Kwp4ygvgWJqL_wzqewxdYh4dXn0nMORDDpytgNWamtu_5Q-o5p-_xLI-IEyqgx5DiMm_u-SufUCWxHqPono7fI1fe_Gxvv79_DV7Je-1T-zWTmJaDyTgiY6sTDKdS1qx2YUT-zVCEksy-Nn3Z9_FqHuOJSjT525L5Qbr_Y20XvUQuEjLquESMrmUNdzEL-A-83_q-4QOLm4Gg3zvSwekpKHvVivnivp2FIHTlp7BLsxUMxfw3a50jyV6wtno5OYvRkwVdx_uakoE8YE_XwG_4-fQQdUJBJG6ZXYehyVvRfa3GIERXouOAQZHEr0Jkzn6iL1_WOJrzpagl-5m2q_cXaJ2U4HtQnx5y06wjP3107kyxObm_3Fra8ujbMqexrDD17Cq8NwkUWOt411m-EOpb1BNwUeEJ9gtfhACV6yvRu-SJif6s"
+const incorrectAlgJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzUxMiIsImtpZCI6IjEifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE2Mjk4OTAyOTUsImV4cCI6MjAwMDAwMDAwMH0.nINKtmErXQfJ_JKaicrigIYGRzDDJqPVfOfN4QA_oV_diJkOfnW3kMmm1Py1JmxqFFBaxiRHOA82SIDWToMYzPS2HDzJ7u4PEWRI_1bc-5hdFg8BRuheP3M9lwZw1DZ5MId9-26q_XCt2MTbXkDnXvUzf5PUOwJ21i4tE2430CykCEWR6nDkxDyGCqs3DsjiKfwEirV89CpLc773SwNEuuFN-FoHacPm0vO5EovSNKC64BQIPk352biugj-3wAL7hGe5kr4VkQZBWOgqG-agQf-QLFJFO9lQUC0VRB0x8-_hS2wTAG3ZKfYtm9gS7IGQScoLmOfM_Vx89u9GVd3ar06Gssky6fJ7BjdYqlRea7ybptS-xgyfEDOBNDIfimvpCP656DY9qNakSWeAEMkngnKNgDqazbSf4rPVufQa1PW0F3AVR6z2QHcEeZell0WcF6TYJ06JzwRqkcQtY_V9twJc5wflqq4agTrI0exs5sVRPxCfAHeO-PipxsfVIdTYhVMkNICshoRx9h4GJ_H7vj7SmvbcE8hdqJaxmdpGpOGEAiqEDGab9fdZXQ6uIf-WN_2ByGlWHqoxfMJcqb0YvtdvIPRfnBC8aQ0jUXowRBrjtPHP4da9RRNo-MKYsoBKWiZR5DzkP8LT26q6CBh1W0xe4DuYSQGbXOfiI2127Jo"
+
 const expiredJwks = `{
 	"keys": [
 	  {
@@ -35,16 +51,62 @@ const expiredJwks = `{
   }`
 
 const expiredJwt = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjM0YnZaN1VlNkE1YmdoT0V2ZlpqRCJ9.eyJpc3MiOiJodHRwczovL2NpdGl6ZW5jb2RlLmV1LmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDEwOTc5NzM2MzEzNjQ0MjAzODk3MSIsImF1ZCI6WyJkZXYtZGFzaGJvYXJkLWJhY2tlbmQiLCJodHRwczovL2NpdGl6ZW5jb2RlLmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2Mjk3MjUxMzAsImV4cCI6MTYyOTgxMTUzMCwiYXpwIjoieTEzTDRLWVdMQUwxVHJieHFaeHVFN0tBaWFaaTc2SUwiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIn0.dRaD-DlYRwg5bYTiVd5UMBog1E1IBEwK6-_73p6E6B6TsVqZU8zAQnlQVvhtZYmHRsL5SxU474JSEL6LbSg1m2CuUR1d7aYFTLt0nassHC6z8JiaA1_gkrmlYJL3e9kLhzJqM2EnHOsx-wvY4udMc_4wJQQcR6Xhuoz6kejskvcZt3y0fs0Qo9KNFc47HIEVchRZd5d1MVC8i6qj7k3Fn5BIJdaRp8VFq5yWbhEBX_wJOFMewi_vXhyXZPVHBrB2K-jZATKU7_TuantGED868BafPUTbosd6fBTfSpZyFkz5Gpc8SIh3vjKpb0H-x4yTaOYF1dRm_lgvKoYGMmV51Q"
+const invalidSignatureJwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOmZhbHNlLCJpYXQiOjE2Mjk4OTAyOTUsImV4cCI6MjAwMDAwMDAwMH0.WTmuZ7O4lMs7sQ2rdMO3lTLdLv5DwAe9Mw6Rp5yyuDP8PUgM-n9EIUAbm15LaABgatnhFldaWJHW_JLJa7wUKMCD93J_g5AJJJwlgWH2nbo7Gp3UqWcarpbRsg1rnA7P0nPw3JHE4eKZN0a78JTj3hWITrT-ytH5chv0hX29RkMjQsuJ2fGkrg9cOkKrHA1owlK0idlyMN_-kzOFq4Oi8wcVU1tYJW61Tdf29dWOMXfKbe4YhtN9qivE6ZAsoIUQcVzlRMqHE0CKQDyoTYpOsba1-AFt_ZN6P3KlKBew68orq-1H0YAWu_YAt_uB7JfNJmQrAdDPox04ibAvcCMm4VOdZ_1oftVdRjPDdrEY4t2_VVDKJ5Jw62wpb1XcfFiNkt4npJGObiEIR9RtR9ei8T2T9C6o_MNUGzmorMnEbcZ_5K4TKgCU_fpoVz71AIXfeBzBq0OFlXP7ytKE9rS9xlvCYLQsKGLydmL-Djsm6SBTlc2XUbndHasPY-aUikB1AKq1LIdavuwuDXg9ngaXP6F3-pk8Dykfou0AD27SqOD3JO666eAPnKyXCScztl3dVTn8InThNFj0E639pFO2U2sh-7L7MYEPaNRhlurXrzT57biqPlFGelLMDjc7faS4-cuvAVQ5LNufCg5eHaxsEBReRSAIaDZoZQFDCFEDipQ"
 
 func TestJwt(t *testing.T) {
-	expectedErr := "Token is expired"
-	jwks, err := parseJwks([]byte(expiredJwks))
-	if err != nil {
-		t.Fatalf("Unexpectedly failed to parse jwks, %v", err)
+	tcs := []struct {
+		desc        string
+		jwt         string
+		jwks        string
+		expectedErr string
+	}{
+		{
+			desc:        "expired jwt",
+			jwks:        expiredJwks,
+			jwt:         expiredJwt,
+			expectedErr: "Token is expired",
+		},
+		{
+			desc: "valid jwt",
+			jwks: validJwks,
+			jwt:  validJwt,
+		},
+		{
+			desc:        "incorrect alg",
+			jwks:        validJwks,
+			jwt:         incorrectAlgJwt,
+			expectedErr: "incorrect Alg",
+		},
+		{
+			desc:        "could not find key",
+			jwks:        expiredJwks,
+			jwt:         validJwt,
+			expectedErr: "could not find key",
+		},
+		{
+			desc:        "invalid signature",
+			jwks:        validJwks,
+			jwt:         invalidSignatureJwt,
+			expectedErr: "verification error",
+		},
 	}
-	r := RS256{jwks}
-	_, err = r.JWT(expiredJwt)
-	if !strings.Contains(err.Error(), expectedErr) {
-		t.Fatalf("Expected expired token, got, %v", err)
+	for _, tc := range tcs {
+		t.Run(tc.desc, func(t *testing.T) {
+			jwks, err := parseJwks([]byte(tc.jwks))
+			if err != nil {
+				t.Fatalf("Unexpectedly failed to parse jwks, %v", err)
+			}
+			r := RS256{jwks}
+			_, err = r.JWT(tc.jwt)
+			if tc.expectedErr == "" {
+				if err != nil {
+					t.Errorf("Unexpected error, %v", err)
+				}
+			} else {
+				if !strings.Contains(err.Error(), tc.expectedErr) {
+					t.Errorf("Expected error to contain %q got, %v", tc.expectedErr, err)
+				}
+			}
+		})
 	}
 }
