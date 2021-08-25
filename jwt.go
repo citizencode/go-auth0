@@ -13,7 +13,7 @@ func NewValidator(uri string) (*RS256, error) {
 	if err != nil {
 		return nil, err
 	}
-	return RS256{jwks}, nil
+	return &RS256{jwks}, nil
 }
 
 type RS256 struct {
