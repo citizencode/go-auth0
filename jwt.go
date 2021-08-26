@@ -4,6 +4,9 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
+	"net/url"
+	"os"
 
 	jwtLib "github.com/golang-jwt/jwt/v4"
 )
@@ -13,9 +16,29 @@ import (
 type MapClaims = jwtLib.MapClaims
 
 func NewRS256(uri string) (*RS256, error) {
-	jwks, err := fetchJwks(uri)
+	u, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
+	}
+	var jwks *jwks
+	if u.Scheme != "file" {
+		jwks, err = fetchJwks(uri)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		f, err := os.Open(u.Path)
+		if err != nil {
+			return nil, fmt.Errorf("could not open jwks file, %q, %w", u.Path, err)
+		}
+		rawJwks, err := ioutil.ReadAll(f)
+		if err != nil {
+			return nil, fmt.Errorf("could not read jwks file, %q, %w", u.Path, err)
+		}
+		jwks, err = parseJwks(rawJwks)
+		if err != nil {
+			return nil, fmt.Errorf("could not parse jwks file %q, %w", u.Path, err)
+		}
 	}
 	return &RS256{jwks}, nil
 }
